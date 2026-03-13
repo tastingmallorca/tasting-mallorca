@@ -6,7 +6,6 @@ import { TourRepository } from '../domain/tour.repository';
 
 export class FirestoreTourRepository implements TourRepository {
   private db = getFirestore();
-  private storage = getStorage();
   private collection = this.db.collection('tours');
 
   private getFilePathFromUrl(url: string): string | null {
@@ -69,7 +68,8 @@ export class FirestoreTourRepository implements TourRepository {
     if (!bucketName) {
       throw new Error('Firebase Storage bucket name is not configured in environment variables.');
     }
-    const bucket = this.storage.bucket(bucketName);
+    const storage = getStorage();
+    const bucket = storage.bucket(bucketName);
 
     const imageDeletionPromises: Promise<any>[] = [];
     const imageUrls = [tour.mainImage, ...tour.galleryImages];
