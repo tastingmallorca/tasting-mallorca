@@ -238,7 +238,12 @@ export async function translateTour(input: TranslateTourInput): Promise<Translat
     if (!jsonMatch) {
       throw new Error(`AI returned invalid JSON format. Raw response: ${combinedText}`);
     }
-    const jsonString = jsonMatch[0];
+    let jsonString = jsonMatch[0];
+
+    // Sanitize the JSON string:
+    // AI models often incorrectly escape single quotes in JSON (e.g., L\'hôtel instead of L'hôtel), 
+    // which throws a "Bad escaped character" SyntaxError in JSON.parse.
+    jsonString = jsonString.replace(/\\'/g, "'");
 
     const parsedJson = JSON.parse(jsonString);
     return TranslateTourOutputSchema.parse(parsedJson);
