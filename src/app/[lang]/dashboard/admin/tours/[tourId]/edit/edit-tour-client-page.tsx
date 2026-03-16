@@ -95,7 +95,9 @@ export function EditTourClientPage({ initialData, lang }: EditTourClientPageProp
         availabilityPeriods: initialData.availabilityPeriods?.map(p => ({
             ...p,
             startDate: p.startDate ? parseISO(p.startDate) : new Date(),
-            endDate: p.endDate ? parseISO(p.endDate) : new Date()
+            endDate: p.endDate ? parseISO(p.endDate) : new Date(),
+            activeDays: p.activeDays && p.activeDays.length > 0 ? p.activeDays : ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'],
+            languages: p.languages && p.languages.length > 0 ? p.languages : ['en', 'es', 'de', 'fr', 'nl']
         })) || [],
         itinerary: initialData.itinerary?.map(item => ({
             ...item,
