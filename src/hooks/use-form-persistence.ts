@@ -42,6 +42,8 @@ export const useFormPersistence = (
                         ...p,
                         startDate: p.startDate ? new Date(p.startDate) : undefined,
                         endDate: p.endDate ? new Date(p.endDate) : undefined,
+                        activeDays: p.activeDays && p.activeDays.length > 0 ? p.activeDays : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                        languages: p.languages && p.languages.length > 0 ? p.languages : ['en', 'es', 'de', 'fr', 'nl']
                     }));
                 }
 
