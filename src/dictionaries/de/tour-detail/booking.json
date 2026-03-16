@@ -35,5 +35,6 @@
     "depositReminder": "Hinweis: Der Restbetrag ist am Tag der Tour zu zahlen – Barzahlung wird bevorzugt.",
     "regionMismatchWarning": "Hinweis: Das ausgewählte Hotel befindet sich in einer anderen Region. Wir haben den nächstgelegenen Treffpunkt für diese Tour vorgeschlagen.",
     "specialOffer": "Sonderangebot",
-    "off": "RABATT"
+    "off": "RABATT",
+    "stripeRefundPolicy": "Stornierungsbedingungen: Die Zahlungsabwicklungsgebühren (ca. 1,5 % - 2,9 % + 0,25 €, erhoben von Stripe) werden im Falle einer Stornierung durch den Kunden nicht erstattet."
 }

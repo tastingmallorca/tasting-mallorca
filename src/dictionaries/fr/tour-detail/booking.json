@@ -35,5 +35,6 @@
     "depositReminder": "Rappel : le solde est à régler le jour de l’excursion – paiement en espèces apprécié.",
     "regionMismatchWarning": "Note : L'hôtel sélectionné est dans une région différente. Nous avons suggéré le point de rencontre le plus proche pour cette excursion.",
     "specialOffer": "Offre Spéciale",
-    "off": "DE RÉDUCTION"
+    "off": "DE RÉDUCTION",
+    "stripeRefundPolicy": "Politique d'annulation : Les frais de traitement des paiements (environ 1,5 % - 2,9 % + 0,25 €, appliqués par Stripe) ne sont pas remboursables en cas d'annulation par le client."
 }

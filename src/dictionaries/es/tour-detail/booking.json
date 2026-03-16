@@ -39,5 +39,6 @@
     "emailPlaceholder": "juan@ejemplo.com",
     "phonePlaceholder": "+34 600 000 000",
     "specialOffer": "Oferta Especial",
-    "off": "DTO."
+    "off": "DTO.",
+    "stripeRefundPolicy": "Política de cancelación: Los gastos de procesamiento de pago (aprox. 1.5% - 2.9% + 0.25€, aplicados por Stripe) no son reembolsables en caso de cancelación por parte del cliente."
 }

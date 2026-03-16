@@ -48,14 +48,7 @@ export class FirestoreTourRepository implements TourRepository {
 
   async update(tour: Partial<Tour> & { id: string }): Promise<void> {
     const { id, ...tourData } = tour;
-     if (tourData.galleryImages && Array.isArray(tourData.galleryImages)) {
-        await this.collection.doc(id).update({
-            ...tourData,
-            galleryImages: FieldValue.arrayUnion(...tourData.galleryImages as any)
-        });
-    } else {
-        await this.collection.doc(id).update(tourData);
-    }
+    await this.collection.doc(id).update(tourData);
   }
 
   async delete(id: string): Promise<void> {

@@ -5,7 +5,7 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { ArrowLeft, Loader2, Circle, Languages, Settings2, Menu } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Languages, Settings2, Menu } from "lucide-react";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { Tour } from "@/backend/tours/domain/tour.model";
@@ -57,12 +57,15 @@ export function TourFormHeader({
             <Button 
                 size="lg" 
                 disabled={isSubmitting}
-                className={cn("w-full md:w-auto md:h-11 md:px-8", isDirty && "bg-accent text-accent-foreground hover:bg-accent/90")}
+                className={cn("w-full md:w-auto md:h-11 md:px-8 transition-all", isDirty ? "bg-accent text-accent-foreground hover:bg-accent/90" : "")}
                 type="submit"
                 form="tour-form"
             >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : 'Save Tour'}
-                {isDirty && !isSubmitting && <Circle className="ml-2 h-3 w-3 fill-current" />}
+                {isSubmitting ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+                ) : (
+                    <><Save className="mr-2 h-4 w-4" /> {isDirty ? 'Save Changes' : 'Save Tour'}</>
+                )}
             </Button>
         </div>
     );

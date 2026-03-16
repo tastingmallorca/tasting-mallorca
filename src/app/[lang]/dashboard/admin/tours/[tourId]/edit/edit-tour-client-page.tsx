@@ -41,18 +41,33 @@ interface EditTourClientPageProps {
 
 const defaultMultilingual = { en: '', de: '', fr: '', nl: '' };
 
-function getFirstErrorMessage(errors: FieldErrors): { message: string, path: string } | null {
+function getFirstErrorMessage(errors: any, currentPath: string = ''): { message: string, path: string } | null {
+    if (!errors || typeof errors !== 'object') return null;
+
+    if (errors.message && typeof errors.message === 'string') {
+        return { message: errors.message, path: currentPath };
+    }
+
+    if (errors.root?.message) {
+        return { message: errors.root.message, path: currentPath };
+    }
+
     for (const key in errors) {
         if (Object.prototype.hasOwnProperty.call(errors, key)) {
-            const error = errors[key as keyof FieldErrors] as any;
-            if (error?.message) {
-                return { message: error.message, path: key };
-            }
-            if (typeof error === 'object' && !Array.isArray(error)) {
-                const nested = getFirstErrorMessage(error);
-                if (nested) {
-                    return { message: nested.message, path: `${key}.${nested.path}` };
+            const error = errors[key];
+            const newPath = currentPath ? `${currentPath}.${key}` : key;
+            
+            // Handle array of errors
+            if (Array.isArray(error)) {
+                for (let i = 0; i < error.length; i++) {
+                    const result = getFirstErrorMessage(error[i], `${newPath}[${i}]`);
+                    if (result) return result;
                 }
+            } 
+            // Handle nested object of errors
+            else if (typeof error === 'object' && error !== null) {
+                const result = getFirstErrorMessage(error, newPath);
+                if (result) return result;
             }
         }
     }
@@ -225,11 +240,11 @@ export function EditTourClientPage({ initialData, lang }: EditTourClientPageProp
             let hasVideoUpdates = false;
 
             for (const lang of languages) {
-                const videoFile = data.video?.[lang];
+                const videoFile = data.video?.[lang as keyof typeof data.video];
                 if (videoFile instanceof File) {
                     setUploadMessage(`Uploading ${lang.toUpperCase()} video...`);
                     const url = await uploadFile(videoFile, tourId!);
-                    videoUrls[lang] = url;
+                    videoUrls[lang as keyof typeof videoUrls] = url;
                     hasVideoUpdates = true;
                 }
             }
@@ -239,7 +254,6 @@ export function EditTourClientPage({ initialData, lang }: EditTourClientPageProp
 
             const tourData = {
                 ...data,
-                mainImage: mainImageUrl,
                 mainImage: mainImageUrl,
                 galleryImages: galleryImageUrls,
                 video: videoUrls,

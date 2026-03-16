@@ -79,6 +79,7 @@ interface TourBookingSectionProps {
         phonePlaceholder?: string;
         specialOffer?: string;
         off?: string;
+        stripeRefundPolicy?: string;
     };
     tour: Tour;
     lang: string;

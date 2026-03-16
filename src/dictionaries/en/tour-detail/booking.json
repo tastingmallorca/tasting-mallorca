@@ -39,5 +39,6 @@
     "emailPlaceholder": "john@example.com",
     "phonePlaceholder": "+1 234 567 890",
     "specialOffer": "Special Offer",
-    "off": "OFF"
+    "off": "OFF",
+    "stripeRefundPolicy": "Cancellation Policy: Payment processing fees (approx. 1.5% - 2.9% + €0.25, applied by Stripe) are non-refundable in the event of customer cancellation."
 }

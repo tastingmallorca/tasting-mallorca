@@ -35,5 +35,6 @@
     "depositReminder": "Let op: Het restbedrag dient op de dag van de tour betaald te worden – contante betaling wordt gewaardeerd.",
     "regionMismatchWarning": "Let op: Het geselecteerde hotel bevindt zich in een andere regio. We hebben het dichtstbijzijnde trefpunt voor deze tour voorgesteld.",
     "specialOffer": "Speciale Aanbieding",
-    "off": "KORTING"
+    "off": "KORTING",
+    "stripeRefundPolicy": "Annuleringsbeleid: De betalingsverwerkingskosten (ongeveer 1,5% - 2,9% + €0,25, toegepast door Stripe) worden niet gerestitueerd in geval van annulering door de klant."
 }
