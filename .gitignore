@@ -37,3 +37,7 @@ next-env.d.ts
 
 # Firebase
 service-account.json
+
+# Agent Workspace
+.agent/
+.agents/

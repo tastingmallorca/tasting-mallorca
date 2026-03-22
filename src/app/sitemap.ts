@@ -1,8 +1,9 @@
 
 import { MetadataRoute } from 'next';
 import { i18n } from '@/dictionaries/config';
-import { findAllTours } from './server-actions/tours/findTours';
-import { findAllBlogPosts } from './server-actions/blog/findBlogPosts';
+import { findAllTours } from "./server-actions/tours/findTours";
+import { findAllBlogPosts } from "./server-actions/blog/findBlogPosts";
+import { findAllDestinations } from "./server-actions/destinations/findDestinations";
 import { Tour } from '@/backend/tours/domain/tour.model';
 import { BlogPost } from '@/backend/blog/domain/blog.model';
 
@@ -55,5 +56,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   );
 
-  return [...staticUrls, ...tourUrls, ...blogUrls];
+  // 4. Dynamic Destination Pages
+  const destinationsResult = await findAllDestinations({});
+  const dbDestinations = destinationsResult.data || [];
+  const destinationUrls = dbDestinations.flatMap((destination) => 
+    i18n.locales.map((lang) => ({
+      url: `${siteUrl}/${lang}/destinations/${destination.slug[lang as keyof typeof destination.slug] || destination.slug.en}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+  );
+
+  return [...staticUrls, ...tourUrls, ...blogUrls, ...destinationUrls];
 }

@@ -19,6 +19,7 @@ import {
   Newspaper,
   MessageSquareHeart,
   Wrench,
+  Map,
 } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
@@ -32,14 +33,30 @@ const navItems = [
   { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 
-const adminNavItems = [
-  { href: '/dashboard/admin/tours', label: 'Manage Tours', icon: Mountain, role: 'admin' },
-  { href: '/dashboard/admin/blog', label: 'Manage Blog', icon: Newspaper, role: 'admin' },
-  { href: '/dashboard/admin/guest-feedback', label: 'Manage Feedback', icon: MessageSquareHeart, role: 'admin' },
-  { href: '/dashboard/admin/private-tours', label: 'Private Tours', icon: Briefcase, role: 'admin' },
-  { href: '/dashboard/users', label: 'Manage Users', icon: Users, role: 'admin' },
-  { href: '/dashboard/admin/hotels', label: 'Manage Hotels', icon: Hotel, role: 'admin' },
-  { href: '/dashboard/admin/meeting-points', label: 'Manage Meeting Points', icon: MapPin, role: 'admin' },
+const adminNavGroups = [
+  {
+    title: 'Core Catalog',
+    items: [
+      { href: '/dashboard/admin/tours', label: 'Tours', icon: Mountain },
+      { href: '/dashboard/admin/private-tours', label: 'Private Tours', icon: Briefcase },
+      { href: '/dashboard/admin/destinations', label: 'Destinations', icon: Map },
+    ]
+  },
+  {
+    title: 'Content & Communication',
+    items: [
+      { href: '/dashboard/admin/blog', label: 'Blog & Articles', icon: Newspaper },
+      { href: '/dashboard/admin/guest-feedback', label: 'Guest Feedback', icon: MessageSquareHeart },
+    ]
+  },
+  {
+    title: 'Operations & Users',
+    items: [
+      { href: '/dashboard/admin/meeting-points', label: 'Meeting Points', icon: MapPin },
+      { href: '/dashboard/admin/hotels', label: 'Partner Hotels', icon: Hotel },
+      { href: '/dashboard/users', label: 'User Directory', icon: Users },
+    ]
+  }
 ];
 
 const guideNavItems = [
@@ -97,24 +114,33 @@ export function DashboardSidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: Dash
             );
           })}
 
-          {userRole === 'admin' && adminNavItems.map((item) => {
-            const href = `/${lang}${item.href}`;
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.href}
-                asChild
-                variant={pathname.startsWith(href) ? 'secondary' : 'ghost'}
-                className="w-full justify-start text-base"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Link href={href}>
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.label}
-                </Link>
-              </Button>
-            );
-          })}
+          {userRole === 'admin' && adminNavGroups.map((group) => (
+            <div key={group.title} className="mb-6 mt-6">
+              <h4 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {group.title}
+              </h4>
+              <div className="space-y-1">
+                {group.items.map((item) => {
+                  const href = `/${lang}${item.href}`;
+                  const Icon = item.icon;
+                  return (
+                    <Button
+                      key={item.href}
+                      asChild
+                      variant={pathname.startsWith(href) ? 'secondary' : 'ghost'}
+                      className="w-full justify-start text-base"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Link href={href}>
+                        <Icon className="mr-3 h-5 w-5" />
+                        {item.label}
+                      </Link>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
 
           {guideNavItems.map((item) => {
             const href = `/${lang}${item.href}`;

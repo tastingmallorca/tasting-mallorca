@@ -4,8 +4,10 @@ import { Locale } from '@/dictionaries/config';
 import HomeClientPage from '@/app/[lang]/home-client-page';
 import { findAllTours } from '../server-actions/tours/findTours';
 import { findAllBlogPosts } from '../server-actions/blog/findBlogPosts';
+import { findAllDestinations } from '../server-actions/destinations/findDestinations';
 import { Tour } from '@/backend/tours/domain/tour.model';
 import { BlogPost } from '@/backend/blog/domain/blog.model';
+import { Destination } from '@/backend/destinations/domain/destination.model';
 import { schemaBuilder } from '@/lib/seo/schema-builder';
 import { Metadata } from 'next';
 
@@ -58,6 +60,9 @@ export default async function Page({ params }: PageProps) {
   const postsResult = await findAllBlogPosts({});
   const posts = (postsResult.data || []).filter(p => p.published).slice(0, 3) as BlogPost[];
 
+  const destinationsResult = await findAllDestinations({});
+  const destinations = (destinationsResult.data || []).filter(d => d.published) as Destination[];
+
   return (
     <>
       <script
@@ -69,7 +74,7 @@ export default async function Page({ params }: PageProps) {
           ])
         }}
       />
-      <HomeClientPage dictionary={dictionary} lang={lang} tours={tours as Tour[]} posts={posts} />
+      <HomeClientPage dictionary={dictionary} lang={lang} tours={tours as Tour[]} posts={posts} destinations={destinations} />
     </>
   );
 }

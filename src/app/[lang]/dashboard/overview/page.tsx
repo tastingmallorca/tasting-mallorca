@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { EmailTestButton } from "@/components/dashboard/email-test-button";
 
 export default function DashboardOverviewPage() {
   return (
@@ -6,8 +7,9 @@ export default function DashboardOverviewPage() {
       <CardHeader>
         <CardTitle>Overview</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col items-start">
         <p>Welcome to your dashboard!</p>
+        <EmailTestButton />
       </CardContent>
     </Card>
   );

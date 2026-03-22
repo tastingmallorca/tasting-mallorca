@@ -1,114 +1,77 @@
-
 'use client';
 
 import { SectionBadge } from '@/components/ui/section-badge';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, ArrowRight, X, MapPin } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, MapPin } from 'lucide-react';
 import { type getDictionary } from '@/dictionaries/get-dictionary';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    DialogDescription,
-} from "@/components/ui/dialog";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Skeleton } from '@/components/ui/skeleton';
+import { useParams } from 'next/navigation';
+import { Destination } from '@/backend/destinations/domain/destination.model';
 
 type TopDestinationsProps = {
     dictionary: Awaited<ReturnType<typeof getDictionary>>['destinations'];
+    destinations: Destination[];
 }
 
-const destinations = [
-    {
-        name: 'Artà',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FArta.png?alt=media&token=fa3396de-9c44-480d-aec5-a048344d772f',
-        imageHint: 'Artà landscape',
-        className: 'md:col-span-2'
-    },
-    {
-        name: 'Ermita de Bonany',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FErmita%20de%20Bonany.jpg?alt=media&token=fc73a916-e8a4-4af9-b0eb-a97d79df51f9',
-        imageHint: 'Ermita de Bonany church',
-        className: 'md:row-span-2'
-    },
-    {
-        name: 'Mirador Es Grau',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FMirador%20Es%20Grau.jpg?alt=media&token=4b952542-71ac-4ad5-a441-52ed163fcc9d',
-        imageHint: 'Mirador Es Grau view',
-        className: ''
-    },
-    {
-        name: 'Petra',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FPetra.jpg?alt=media&token=03514b21-ff6c-4a97-a92f-cb0bf73a3b8b',
-        imageHint: 'Petra village',
-        className: ''
-    },
-    {
-        name: 'Sineu',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FSineu.jpg?alt=media&token=d9b7b93a-a07a-4624-9014-504394f37483',
-        imageHint: 'Sineu market',
-        className: ''
-    },
-    {
-        name: 'Valldemossa',
-        image: 'https://firebasestorage.googleapis.com/v0/b/tasting-mallorca.firebasestorage.app/o/web%2Ffotos%20top%20destinations%2FVALLDEMOSSA%202.jpg?alt=media&token=05d35042-3bac-419e-8095-046cb75d7bc5',
-        imageHint: 'Valldemossa town',
-        className: 'md:col-span-2'
-    },
+// Add local layout classes matching the old design
+const classNamesForDestinations = [
+    'md:col-span-2',
+    'md:row-span-2',
+    '',
+    '',
+    '',
+    'md:col-span-2'
 ];
 
-const DestinationGridItem = ({ dest, index, onClick }: { dest: typeof destinations[0], index: number, onClick: () => void }) => {
+const DestinationGridItem = ({ dest, index }: { dest: Destination, index: number }) => {
     const [isLoading, setIsLoading] = useState(true);
+    const params = useParams<{ lang: string }>();
+    const lang = params?.lang || 'en';
+    const gridClass = classNamesForDestinations[index % classNamesForDestinations.length];
+
     return (
-        <div
-            className={`relative rounded-2xl overflow-hidden group h-full cursor-pointer ${dest.className}`}
-            onClick={onClick}
+        <Link
+            href={`/${lang}/destinations/${dest.slug[lang] || dest.slug.en}`}
+            className={`relative rounded-2xl overflow-hidden group h-full cursor-pointer block ${gridClass}`}
         >
-            {isLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
-            <Image
-                src={dest.image}
-                alt={dest.name}
-                fill
-                className={`object-cover transition-transform duration-300 group-hover:scale-105 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-                data-ai-hint={dest.imageHint}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                unoptimized
-                onLoad={() => setIsLoading(false)}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            {isLoading && <Skeleton className="absolute inset-0 w-full h-full z-0" />}
+            {dest.mainImage ? (
+                <Image
+                    src={dest.mainImage}
+                    alt={dest.name}
+                    fill
+                    className={`object-cover transition-transform duration-500 group-hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100 z-0'}`}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    unoptimized
+                    onLoad={() => setIsLoading(false)}
+                />
+            ) : (
+                <div className="absolute inset-0 bg-primary/20 backdrop-blur-xl z-0" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 group-hover:opacity-80"></div>
 
             {/* Glassmorphism Title Card */}
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-                <div className="bg-white/20 backdrop-blur-md border border-white/20 rounded-xl p-4 shadow-lg">
-                    <h3 className="text-xl font-bold text-white text-center">{dest.name}</h3>
+            <div className="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
+                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-5 shadow-2xl">
+                    <h3 className="text-2xl font-black text-white text-center tracking-tight drop-shadow-md">{dest.name}</h3>
+                    <p className="text-white/80 text-sm text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 hidden md:block">
+                        Explore Tours & Experiences
+                    </p>
                 </div>
             </div>
 
-            <div className="absolute top-4 right-4 h-12 w-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-transform duration-300 group-hover:rotate-45 group-hover:bg-primary">
+            <div className="absolute top-4 right-4 h-12 w-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:rotate-45 group-hover:bg-primary group-hover:scale-110 shadow-lg z-10">
                 <ArrowUpRight className="h-6 w-6 text-white" />
             </div>
-        </div>
+        </Link>
     );
 };
 
-export function TopDestinationsSection({ dictionary }: TopDestinationsProps) {
+export function TopDestinationsSection({ dictionary, destinations }: TopDestinationsProps) {
     const mainDestinations = destinations.slice(0, 6);
-    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-
-    const openLightbox = (index: number) => {
-        setSelectedImageIndex(index);
-        setIsLightboxOpen(true);
-    };
 
     return (
         <section className="py-24 bg-background flex flex-col items-center">
@@ -125,12 +88,12 @@ export function TopDestinationsSection({ dictionary }: TopDestinationsProps) {
             <div className="w-full px-4 md:px-0 md:w-[80vw] mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-[350px] gap-4">
                     {mainDestinations.map((dest, index) => (
-                        <DestinationGridItem key={dest.name} dest={dest} index={index} onClick={() => openLightbox(index)} />
+                        <DestinationGridItem key={dest.id} dest={dest} index={index} />
                     ))}
-                    <div className="p-8 rounded-xl bg-secondary flex flex-col items-center justify-center text-center lg:col-span-3">
+                    <div className="p-8 md:p-12 rounded-2xl bg-gradient-to-br from-secondary to-background border border-border/50 shadow-sm flex flex-col items-center justify-center text-center lg:col-span-3 transition-colors hover:border-primary/30">
                         <h3 className="text-3xl font-extrabold text-foreground">{dictionary.ctaTitle}</h3>
-                        <p className="mt-2 text-muted-foreground">{dictionary.ctaSubtitle}</p>
-                        <Button asChild size="lg" className="mt-6 font-bold rounded-full group">
+                        <p className="mt-3 text-lg text-muted-foreground">{dictionary.ctaSubtitle}</p>
+                        <Button asChild size="lg" className="mt-8 font-bold rounded-full group px-8">
                             <Link href="/tours">
                                 {dictionary.ctaButton}
                                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -139,40 +102,6 @@ export function TopDestinationsSection({ dictionary }: TopDestinationsProps) {
                     </div>
                 </div>
             </div>
-
-            <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
-                <DialogContent className="max-w-none w-screen h-screen p-0 bg-background/80 backdrop-blur-sm border-0 flex items-center justify-center">
-                    <DialogTitle className="sr-only">Destinations Lightbox</DialogTitle>
-                    <DialogDescription className="sr-only">A carousel of destination images.</DialogDescription>
-                    <Carousel
-                        opts={{
-                            loop: true,
-                            startIndex: selectedImageIndex,
-                        }}
-                        className="w-full h-full max-w-7xl"
-                    >
-                        <CarouselContent className="h-full">
-                            {mainDestinations.map((dest, index) => (
-                                <CarouselItem key={index} className="flex flex-col items-center justify-center p-4">
-                                    <div className="relative w-full h-[85vh]">
-                                        <Image
-                                            src={dest.image}
-                                            alt={dest.name}
-                                            fill
-                                            className="object-contain"
-                                            sizes="100vw"
-                                            unoptimized
-                                        />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-foreground mt-4">{dest.name}</h3>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground bg-background/50 hover:bg-background/70 border-border h-12 w-12" />
-                        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground bg-background/50 hover:bg-background/70 border-border h-12 w-12" />
-                    </Carousel>
-                </DialogContent>
-            </Dialog>
         </section>
     );
 }

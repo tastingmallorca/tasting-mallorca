@@ -16,6 +16,7 @@ import { BlogSection } from '@/components/home/blog-section';
 import { type Locale } from '@/dictionaries/config';
 import { Tour } from '@/backend/tours/domain/tour.model';
 import { BlogPost } from '@/backend/blog/domain/blog.model';
+import { Destination } from '@/backend/destinations/domain/destination.model';
 import { PrivateToursCtaSection } from '@/components/home/private-tours-cta-section';
 
 
@@ -23,12 +24,14 @@ export default function HomeClientPage({
   dictionary,
   lang,
   tours,
-  posts
+  posts,
+  destinations
 }: {
   dictionary: Awaited<ReturnType<typeof getDictionary>>;
   lang: Locale;
   tours: Tour[];
   posts: BlogPost[];
+  destinations: Destination[];
 }) {
   return (
     <div className="flex flex-col bg-background">
@@ -40,7 +43,7 @@ export default function HomeClientPage({
       <PrivateToursCtaSection dictionary={dictionary.privateToursCta} lang={lang} />
       <GallerySection dictionary={dictionary.gallery} />
       <HappyCustomersSection dictionary={dictionary.happyCustomers} />
-      <TopDestinationsSection dictionary={dictionary.destinations} />
+      <TopDestinationsSection dictionary={dictionary.destinations} destinations={destinations} />
       <TestimonialsSection dictionary={dictionary.testimonials} />
       <BlogSection dictionary={dictionary.blog} posts={posts} lang={lang} />
     </div>
