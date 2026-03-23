@@ -117,7 +117,28 @@ async function manualVerifyBooking(bookingId: string, paymentIntentId: string): 
                     amountDue: amountDue,
                 });
 
-                console.log(`✅ Manually confirmed booking ${bookingId} `);
+                console.log(`✅ Manually confirmed booking ${bookingId}`);
+
+                // --- EMAIL DISPATCH BLOCK (Fallback) ---
+                try {
+                  const tourDoc = await db.collection('tours').doc(booking.tourId).get();
+                  if (tourDoc.exists) {
+                      const tourData = tourDoc.data() as any;
+                      const bookingData = { ...booking, status: 'confirmed', amountPaid, amountDue };
+                      
+                      const { sendBookingConfirmation } = await import('@/backend/emails/sendBookingConfirmation');
+                      const { sendAdminNotification } = await import('@/backend/emails/sendAdminNotification');
+                      
+                      // Fire sequentially or parallel without blocking the UI heavily
+                      await Promise.all([
+                          sendBookingConfirmation(bookingData as any, tourData),
+                          sendAdminNotification(bookingData as any, tourData)
+                      ]);
+                  }
+                } catch (emailErr) {
+                  console.error('❌ Non-fatal error during fallback email dispatch:', emailErr);
+                }
+                // --- END EMAIL DISPATCH ---
 
                 // Return updated data
                 return getFullBookingDetails({

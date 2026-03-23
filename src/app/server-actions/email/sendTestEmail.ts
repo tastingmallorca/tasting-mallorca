@@ -1,9 +1,8 @@
 'use server';
 
 import { createSafeAction } from '@/app/server-actions/lib/safe-action';
-import { adminApp } from '@/firebase/server/config';
-import { getFirestore } from 'firebase-admin/firestore';
 import { z } from 'zod';
+import nodemailer from 'nodemailer';
 
 const testEmailSchema = z.object({});
 
@@ -13,32 +12,40 @@ export const sendTestEmail = createSafeAction(
   },
   async (): Promise<{ data?: { success: boolean; message: string }; error?: string }> => {
     try {
-      // Ensure the admin SDK is initialized
-      adminApp;
-      const db = getFirestore();
-
-      // Recipient addresses requested by Admin
-      const recipients = ['caangogi@gmail.com'];
-      /*   const recipients = ['tastingmallorca2025@gmail.com', 'excursion.surprise@hotmail.com']; */
-
-      // Send via trigger extension by writing to 'mail' collection
-      await db.collection('mail').add({
-        to: recipients,
-        message: {
-          subject: '[System Diagnostics] Testing Malllorca Firebase Email Delivery',
-          text: 'This is an automated test email to verify that the domain DNS and Firebase Extension configs are working perfectly.',
-          html: '<h2 style="color:#0ea5e9;">Firebase Trigger Email Test</h2><p>This is an automated diagnostic email to ensure emails are correctly routed to Admins when bookings and events occur.</p>',
+      // Initialize Nodemailer Transport using Hostinger settings
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+        port: parseInt(process.env.SMTP_PORT || '465', 10),
+        secure: true, // true for 465, false for 587
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
         },
       });
+
+      // Target emails (Testing string as requested)
+      const recipients = 'caangogi@gmail.com';
+      /* const recipients = 'tastingmallorca2025@gmail.com, excursion.surprise@hotmail.com'; */
+
+      // Dispatch the email
+      const info = await transporter.sendMail({
+        from: `"Tasting Mallorca" <${process.env.SMTP_USER}>`,
+        to: recipients,
+        subject: '[System Diagnostics] Testing Mallorca Native Email Delivery',
+        text: 'This is an automated test email dispatched directly via Vercel (Next.js NodeMailer) using your Hostinger SMTP server.',
+        html: '<h2 style="color:#0ea5e9;">Server Action Email Test</h2><p>This automated email confirms that your native Nodemailer integration successfully routed an SMTP request from Next.js straight to the Admins.</p>',
+      });
+
+      console.log('Message sent: %s', info.messageId);
 
       return {
         data: {
           success: true,
-          message: 'Test email successfully queued in Firestore. Check the aforementioned inboxes.',
+          message: 'Test email successfully dispatched via Hostinger SMTP. Check your inbox.',
         },
       };
     } catch (error: any) {
-      console.error('Error dispatching test email document:', error);
+      console.error('Error dispatching test email:', error);
       return { error: error.message || 'An unexpected error occurred.' };
     }
   }

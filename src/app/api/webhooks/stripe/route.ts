@@ -52,6 +52,30 @@ export async function POST(req: NextRequest) {
                     amountPaid: amountPaid,
                     amountDue: amountDue,
                 });
+
+                // --- EMAIL DISPATCH BLOCK ---
+                try {
+                  const bookingDoc = await db.collection('bookings').doc(bookingId).get();
+                  if (bookingDoc.exists) {
+                      const bookingData = bookingDoc.data() as any;
+                      const tourDoc = await db.collection('tours').doc(bookingData.tourId).get();
+                      
+                      if (tourDoc.exists) {
+                          const tourData = tourDoc.data() as any;
+                          
+                          const { sendBookingConfirmation } = await import('@/backend/emails/sendBookingConfirmation');
+                          const { sendAdminNotification } = await import('@/backend/emails/sendAdminNotification');
+                          
+                          await Promise.all([
+                              sendBookingConfirmation(bookingData, tourData),
+                              sendAdminNotification(bookingData, tourData)
+                          ]);
+                      }
+                  }
+                } catch (emailErr) {
+                  console.error('❌ Non-fatal error during email dispatch:', emailErr);
+                }
+                // --- END EMAIL DISPATCH ---
                 
                 const paymentData: Omit<Payment, 'id'> = {
                     bookingId: bookingId,
